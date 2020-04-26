@@ -67,8 +67,24 @@ function runTracker() {
 }
 
 function viewEmployees() {
-    connection.query('SELECT employee.id, employee.first_name, employee.last_name, employee.role_id, ', function(err, data){
+    let query = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary ';
+    query += "FROM employee INNER JOIN role ON (employee.role_id = role.id) ";
+    query += "INNER JOIN department ON (role.department_id = department.id)";
+
+    connection.query(query, function(err, data){
         if (err) throw err;
+        for (let i = 0; i < data.length; i++) {
+            console.log(
+                `ID: ${data[i].id}
+                First Name: ${data[i].first_name}
+                Last Name: ${data[i].last_name}
+                Role: ${data[i].title}
+                Department: ${data[i].name}
+                Salary: ${data[i].salary}
+                `
+            )
+        }
+        runTracker();
     });
 }
 
