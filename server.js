@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+require('console.table');
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -74,18 +75,7 @@ function viewEmployees() {
 
     connection.query(query, function(err, data){
         if (err) throw err;
-        for (let i = 0; i < data.length; i++) {
-            console.log([
-                `ID: ${data[i].id}
-                First Name: ${data[i].first_name}
-                Last Name: ${data[i].last_name}
-                Role: ${data[i].title}
-                Department: ${data[i].name}
-                Salary: ${data[i].salary}
-                `
-            ])
-            // console.table([{ ID: `${data[i].id}`, First_Name: `${data[i].first_name}`}], ['ID', 'First_Name']);
-        }
+        console.table(data);
         runTracker();
     });
 }
@@ -179,18 +169,7 @@ function viewByDepartment() {
         
             connection.query(query, function(err, data){
                 if (err) throw err;
-                for (let i = 0; i < data.length; i++) {
-                    console.log([
-                        `ID: ${data[i].id}
-                        First Name: ${data[i].first_name}
-                        Last Name: ${data[i].last_name}
-                        Role: ${data[i].title}
-                        Department: ${data[i].name}
-                        Salary: ${data[i].salary}
-                        `
-                    ])
-                    // console.table([{ ID: `${data[i].id}`, First_Name: `${data[i].first_name}`}], ['ID', 'First_Name']);
-                }
+                    console.table(data)
                 runTracker();
             });
         })
