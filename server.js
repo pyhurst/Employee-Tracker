@@ -1,6 +1,5 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const table = require('console.table');
 
 const connection = mysql.createConnection({
     host: 'localhost',
@@ -46,6 +45,7 @@ function runTracker() {
                 case "View All Employees by Manager":
                     break;
                 case "Add Employee":
+                    addEmployee();
                     break;
                 case "Remove Employee":
                     break;
@@ -74,7 +74,7 @@ function viewEmployees() {
     connection.query(query, function(err, data){
         if (err) throw err;
         for (let i = 0; i < data.length; i++) {
-            console.log(
+            console.log([
                 `ID: ${data[i].id}
                 First Name: ${data[i].first_name}
                 Last Name: ${data[i].last_name}
@@ -82,13 +82,16 @@ function viewEmployees() {
                 Department: ${data[i].name}
                 Salary: ${data[i].salary}
                 `
-            )
+            ])
+            // console.table([{ ID: `${data[i].id}`, First_Name: `${data[i].first_name}`}], ['ID', 'First_Name']);
         }
         runTracker();
     });
 }
 
 function addEmployee() {
+    connection.query('SELECT id,title FROM role', function(err, data){
+        if (err) throw err;
     inquirer
         .prompt([
             {
@@ -102,23 +105,36 @@ function addEmployee() {
                 name: 'last'
             },
             {
-                type: 'input',
+                type: 'rawlist',
                 message: 'What is the employee\'s role?',
-                name: 'role'
+                name: 'role',
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < data.length; i++) {
+                      choiceArray.push(data[i].title);
+                    }
+                    return choiceArray;
+                }
             },
-            {
-                type: 'input',
-                message: 'Who is the employee\'s manager?',
-                name: 'manager'
-            }
+            // {
+            //     type: 'input',
+            //     message: 'Who is the employee\'s manager?',
+            //     name: 'manager'
+            // }
         ]).then(function(answer) {
+            let chosenItem;
+            for (let i = 0; i < data.length; i++) {
+                if(data[i].title === answer.role) {
+                    chosenItem = data[i].id;
+                }
+            }
             connection.query(
                 'INSERT INTO employee SET ?',
                 {
                     first_name: answer.first,
                     last_name: answer.last,
-                    role_id: answer.role,
-                    manager_id: answer.manager
+                    role_id: chosenItem,
+                    // manager_id: answer.manager
                 },
                 function(err){
                     if (err) throw err;
@@ -126,4 +142,5 @@ function addEmployee() {
                     runTracker();
                 });
         })
+    });
 }
