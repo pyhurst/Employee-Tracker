@@ -41,6 +41,7 @@ function runTracker() {
                     viewEmployees();
                     break;
                 case "View All Employees by Department":
+                    viewByDepartment();
                     break;
                 case "View All Employees by Manager":
                     break;
@@ -143,4 +144,55 @@ function addEmployee() {
                 });
         })
     });
+}
+
+function viewByDepartment() {
+    connection.query('SELECT * FROM department', function(err, res){
+        if (err) throw err;
+    inquirer
+        .prompt(
+            {
+                type: 'rawlist',
+                message: 'What department would you like to view?',
+                name: 'department',
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                      choiceArray.push(res[i].name);
+                    }
+                    return choiceArray;
+                }
+            }
+        
+        ).then(function(answer) {
+            let chosenItem;
+            for (let i = 0; i < res.length; i++) {
+                if(res[i].name === answer.department) {
+                    chosenItem = res[i].id;
+                }
+            }
+
+            let query = 'SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name, role.salary ';
+            query += "FROM employee INNER JOIN role ON (employee.role_id = role.id) ";
+            query += "INNER JOIN department ON (role.department_id = department.id)";
+            query += `WHERE (role.department_id = ${chosenItem})`;
+        
+            connection.query(query, function(err, data){
+                if (err) throw err;
+                for (let i = 0; i < data.length; i++) {
+                    console.log([
+                        `ID: ${data[i].id}
+                        First Name: ${data[i].first_name}
+                        Last Name: ${data[i].last_name}
+                        Role: ${data[i].title}
+                        Department: ${data[i].name}
+                        Salary: ${data[i].salary}
+                        `
+                    ])
+                    // console.table([{ ID: `${data[i].id}`, First_Name: `${data[i].first_name}`}], ['ID', 'First_Name']);
+                }
+                runTracker();
+            });
+        })
+    })
 }
