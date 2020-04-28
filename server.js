@@ -53,6 +53,7 @@ function runTracker() {
                     deleteEmployee();
                     break;
                 case "Update Employee Role":
+                    updateEmployeeRole();
                     break;
                 // case "Update Employee Manager":
                 //     break;
@@ -222,6 +223,10 @@ function deleteEmployee() {
     })
 }
 
+function updateEmployeeRole() {
+    
+}
+
 function viewRoles() {
     let query = 'SELECT role.title, role.salary, department.name ';
     query += "FROM role INNER JOIN department ON (role.department_id = department.id)";
@@ -285,7 +290,41 @@ function addRole() {
 }
 
 function deleteRole() {
+    connection.query('SELECT * FROM role', function(err, res){
+        if (err) throw err;
+    inquirer
+        .prompt(
+            {
+                type: 'rawlist',
+                message: 'Which role would you like to delete?',
+                name: 'remove',
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                      choiceArray.push(res[i].title);
+                    }
+                    return choiceArray;
+                }
+            }
+        
+        ).then(function(answer) {
+            let chosenItem;
 
+            for (let i = 0; i < res.length; i++) {
+                if(res[i].title === answer.remove) {
+                    chosenItem = res[i].id;
+                }
+            }
+
+            let query = 'DELETE FROM role WHERE id = ?';
+        
+            connection.query(query, chosenItem, function(err, data){
+                if (err) throw err;
+                console.log(`${answer.remove} has been deleted.`);
+                runTracker();
+            });
+        })
+    })
 }
 
 function updateRole() {
