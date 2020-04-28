@@ -50,6 +50,7 @@ function runTracker() {
                     addEmployee();
                     break;
                 case "Remove Employee":
+                    deleteEmployee();
                     break;
                 case "Update Employee Role":
                     break;
@@ -170,6 +171,45 @@ function viewByDepartment() {
             connection.query(query, function(err, data){
                 if (err) throw err;
                     console.table(data)
+                runTracker();
+            });
+        })
+    })
+}
+
+function deleteEmployee() {
+    connection.query('SELECT * FROM employee', function(err, res){
+        if (err) throw err;
+    inquirer
+        .prompt(
+            {
+                type: 'rawlist',
+                message: 'Which employee would you like to remove?',
+                name: 'remove',
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                      choiceArray.push(res[i].first_name + " " + res[i].last_name);
+                    }
+                    return choiceArray;
+                }
+            }
+        
+        ).then(function(answer) {
+            let result = answer.remove.split(' ');
+            let chosenItem;
+
+            for (let i = 0; i < res.length; i++) {
+                if(res[i].first_name === result[0] && res[i].last_name === result[1]) {
+                    chosenItem = res[i].id;
+                }
+            }
+
+            let query = 'DELETE FROM employee WHERE id = ?';
+        
+            connection.query(query, chosenItem, function(err, data){
+                if (err) throw err;
+                console.log(`${answer.remove} has been deleted.`);
                 runTracker();
             });
         })
