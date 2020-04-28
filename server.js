@@ -26,11 +26,11 @@ function runTracker() {
             choices: [
                 "View All Employees",
                 "View All Employees by Department",
-                "View All Employees by Manager",
+                // "View All Employees by Manager",
                 "Add Employee",
                 "Remove Employee",
                 "Update Employee Role",
-                "Update Employee Manager",
+                // "Update Employee Manager",
                 "View All Roles",
                 "Add Role",
                 "Remove Role",
@@ -63,6 +63,10 @@ function runTracker() {
                     addRole();
                     break;
                 case "Remove Role":
+                    deleteRole();
+                    break;
+                case "Update Role":
+                    updateRole();
                     break;
                 case "Exit":
                     connection.end();
@@ -220,7 +224,7 @@ function deleteEmployee() {
 
 function viewRoles() {
     let query = 'SELECT role.title, role.salary, department.name ';
-    query += "FROM role INNER JOIN department ON (role.department_id = department.id) ";
+    query += "FROM role INNER JOIN department ON (role.department_id = department.id)";
 
     connection.query(query, function(err, data){
         if (err) throw err;
@@ -276,6 +280,86 @@ function addRole() {
                     console.log('Role successfully added!');
                     runTracker();
                 });
+        })
+    });
+}
+
+function deleteRole() {
+
+}
+
+function updateRole() {
+    let query = 'SELECT role.id, role.title, role.salary, role.department_id, department.name ';
+    query += "FROM role INNER JOIN department ON (role.department_id = department.id)";
+
+    connection.query(query, function(err, res){
+        if (err) throw err;
+    inquirer
+        .prompt([
+            {
+                type: 'rawlist',
+                message: 'What role would you like to update?',
+                name: 'role',
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                      choiceArray.push(res[i].title);
+                    }
+                    return choiceArray;
+                }
+            },
+            {
+                type: 'input',
+                message: 'What is the new name of the role?',
+                name: 'newRole'
+            },
+            {
+                type: 'input',
+                message: 'What is the salary of the new role?',
+                name: 'salary'
+            },
+            {
+                type: 'rawlist',
+                message: 'What department is this role in?',
+                name: 'department',
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                      choiceArray.push(res[i].name);
+                    }
+                    return choiceArray;
+                }
+            }
+        ]).then(function(answer) {
+            let chosenRole;
+            for (let i = 0; i < res.length; i++) {
+                if(res[i].title === answer.role) {
+                    chosenRole = res[i].id;
+                }
+            }
+
+            let chosenDepartment;
+            for (let i = 0; i < res.length; i++) {
+                if(res[i].name === answer.department) {
+                    chosenDepartment = res[i].department_id;
+                }
+            }
+
+            connection.query(
+                'UPDATE role SET ? WHERE ?', [
+                {
+                    title: answer.newRole.trim(),
+                    salary: answer.salary.trim(),
+                    department_id: chosenDepartment
+                },
+                {
+                    id: chosenRole
+                }],
+                function(err){
+                    if (err) throw err;
+                    console.log('Role successfully updated!');
+                    runTracker();
+            });
         })
     });
 }
