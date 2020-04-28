@@ -44,8 +44,8 @@ function runTracker() {
                 case "View All Employees by Department":
                     viewByDepartment();
                     break;
-                case "View All Employees by Manager":
-                    break;
+                // case "View All Employees by Manager":
+                //     break;
                 case "Add Employee":
                     addEmployee();
                     break;
@@ -54,11 +54,13 @@ function runTracker() {
                     break;
                 case "Update Employee Role":
                     break;
-                case "Update Employee Manager":
-                    break;
+                // case "Update Employee Manager":
+                //     break;
                 case "View All Roles":
+                    viewRoles();
                     break;
                 case "Add Role":
+                    addRole();
                     break;
                 case "Remove Role":
                     break;
@@ -82,7 +84,7 @@ function viewEmployees() {
 }
 
 function addEmployee() {
-    connection.query('SELECT id,title FROM role', function(err, data){
+    connection.query('SELECT id,title FROM role', function(err, res){
         if (err) throw err;
     inquirer
         .prompt([
@@ -102,8 +104,8 @@ function addEmployee() {
                 name: 'role',
                 choices: function() {
                     var choiceArray = [];
-                    for (var i = 0; i < data.length; i++) {
-                      choiceArray.push(data[i].title);
+                    for (var i = 0; i < res.length; i++) {
+                      choiceArray.push(res[i].title);
                     }
                     return choiceArray;
                 }
@@ -115,9 +117,9 @@ function addEmployee() {
             // }
         ]).then(function(answer) {
             let chosenItem;
-            for (let i = 0; i < data.length; i++) {
-                if(data[i].title === answer.role) {
-                    chosenItem = data[i].id;
+            for (let i = 0; i < res.length; i++) {
+                if(res[i].title === answer.role) {
+                    chosenItem = res[i].id;
                 }
             }
             connection.query(
@@ -214,4 +216,66 @@ function deleteEmployee() {
             });
         })
     })
+}
+
+function viewRoles() {
+    let query = 'SELECT role.title, role.salary, department.name ';
+    query += "FROM role INNER JOIN department ON (role.department_id = department.id) ";
+
+    connection.query(query, function(err, data){
+        if (err) throw err;
+        console.table(data);
+        runTracker();
+    });
+}
+
+function addRole() {
+    connection.query('SELECT * FROM department', function(err, res){
+        if (err) throw err;
+    inquirer
+        .prompt([
+            {
+                type: 'input',
+                message: 'What is the title of the new role?',
+                name: 'title'
+            },
+            {
+                type: 'input',
+                message: 'What is the salary of this role?',
+                name: 'salary'
+            },
+            {
+                type: 'rawlist',
+                message: 'What department is this role in?',
+                name: 'department',
+                choices: function() {
+                    var choiceArray = [];
+                    for (var i = 0; i < res.length; i++) {
+                      choiceArray.push(res[i].name);
+                    }
+                    return choiceArray;
+                }
+            }
+        ]).then(function(answer) {
+            let chosenItem;
+            for (let i = 0; i < res.length; i++) {
+                if(res[i].name === answer.department) {
+                    chosenItem = res[i].id;
+                }
+            }
+
+            connection.query(
+                'INSERT INTO role SET ?',
+                {
+                    title: answer.title.trim(),
+                    salary: answer.salary.trim(),
+                    department_id: chosenItem
+                },
+                function(err){
+                    if (err) throw err;
+                    console.log('Role successfully added!');
+                    runTracker();
+                });
+        })
+    });
 }
