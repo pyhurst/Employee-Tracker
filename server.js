@@ -33,6 +33,7 @@ function runTracker() {
                 "Add Role",
                 "Remove Role",
                 "Update Role",
+                "View All Departments",
                 "Exit"
             ]
         }).then(function (answer) {
@@ -63,6 +64,9 @@ function runTracker() {
                     break;
                 case "Update Role":
                     updateRole();
+                    break;
+                case "View All Departments":
+                    viewDepartments();
                     break;
                 case "Exit":
                     connection.end();
@@ -465,5 +469,13 @@ function updateRole() {
                 });
             });
         });
+    });
+}
+
+function viewDepartments() {
+    connection.query('SELECT * FROM department', function (err, data) {
+        if (err) throw err;
+        console.table(data);
+        runTracker();
     });
 }
