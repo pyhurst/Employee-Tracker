@@ -9,7 +9,7 @@ name VARCHAR(30) NOT NULL,
 PRIMARY KEY (id)
 );
 
-CREATE TABLE role(
+CREATE TABLE roles(
 id INT(10) NOT NULL,
 title VARCHAR(30) NOT NULL,
 salary DECIMAL NOT NULL,
@@ -22,16 +22,9 @@ id INT(10) NOT NULL,
 first_name VARCHAR(30) NOT NULL,
 last_name VARCHAR(30) NOT NULL,
 role_id INT(10) NOT NULL,
-manager_id INT(10),
-PRIMARY KEY (id)
-);
-
-CREATE TABLE manager(
-id INT(10) NOT NULL,
-name VARCHAR(30) NOT NULL,
 PRIMARY KEY (id)
 );
 
 SELECT * FROM department;
-SELECT * FROM role;
+SELECT * FROM roles;
 SELECT * FROM employee;

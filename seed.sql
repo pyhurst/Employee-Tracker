@@ -4,16 +4,16 @@ VALUES (1, 'Sales');
 INSERT INTO department (id, name)
 VALUES (2, 'Finance');
 
-INSERT INTO role (id, title, salary, department_id)
+INSERT INTO roles (id, title, salary, department_id)
 VALUES (1, 'Sales Lead', 100000, 1);
 
-INSERT INTO role (id, title, salary, department_id)
+INSERT INTO roles (id, title, salary, department_id)
 VALUES (2, 'Entry Sales', 50000, 1);
 
-INSERT INTO role (id, title, salary, department_id)
+INSERT INTO roles (id, title, salary, department_id)
 VALUES (3, 'Accountant', 80000, 2);
 
-INSERT INTO role (id, title, salary, department_id)
+INSERT INTO roles (id, title, salary, department_id)
 VALUES (4, 'Financial Analyst', 70000, 2);
 
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
