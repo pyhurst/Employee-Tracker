@@ -565,16 +565,16 @@ function viewBudget() {
                 }
 
             ).then(function (answer) {
-                let chosenItemId;
+                let chosenDepartmentId;
                 for (let i = 0; i < res.length; i++) {
                     if (res[i].name === answer.department) {
-                        chosenItemId = res[i].id;
+                        chosenDepartmentId = res[i].id;
                     }
                 }
 
-                let query = 'SELECT salary FROM roles WHERE department_id = ?';
+                let query = 'SELECT employee.id, roles.salary FROM employee INNER JOIN roles ON (employee.role_id = roles.id) INNER JOIN department ON (roles.department_id = department.id) WHERE roles.department_id = ?';
 
-                connection.query(query, chosenItemId, function (err, data) {
+                connection.query(query, chosenDepartmentId, function (err, data) {
                     if (err) throw err;
 
                     let totalSum = 0;
