@@ -34,6 +34,7 @@ function runTracker() {
                 "Remove Role",
                 "Update Role",
                 "View All Departments",
+                "Total Utilized Budget by Department",
                 "Exit"
             ]
         }).then(function (answer) {
@@ -67,6 +68,9 @@ function runTracker() {
                     break;
                 case "View All Departments":
                     viewDepartments();
+                    break;
+                case "Total Utilized Budget by Department":
+                    viewBudget();
                     break;
                 case "Exit":
                     connection.end();
@@ -478,4 +482,49 @@ function viewDepartments() {
         console.table(data);
         runTracker();
     });
+}
+
+function viewBudget() {
+    connection.query('SELECT * FROM department', function (err, res) {
+        if (err) throw err;
+        inquirer
+            .prompt(
+                {
+                    type: 'rawlist',
+                    message: 'What department would you like to view?',
+                    name: 'department',
+                    choices: function () {
+                        var choiceArray = [];
+                        for (var i = 0; i < res.length; i++) {
+                            choiceArray.push(res[i].name);
+                        }
+                        return choiceArray;
+                    }
+                }
+
+            ).then(function (answer) {
+                let chosenItemId;
+                for (let i = 0; i < res.length; i++) {
+                    if (res[i].name === answer.department) {
+                        chosenItemId = res[i].id;
+                    }
+                }
+
+                let query = 'SELECT salary FROM roles WHERE department_id = ?';
+
+                connection.query(query, chosenItemId, function (err, data) {
+                    if (err) throw err;
+
+                    let totalSum = 0;
+
+                    for (let i = 0; i < data.length; i++) {
+                        totalSum += data[i].salary;
+                    }
+
+                    console.log(`The total utilized budget for ${answer.department} is $${totalSum}.`);
+
+                    runTracker();
+                });
+            })
+    })
 }
