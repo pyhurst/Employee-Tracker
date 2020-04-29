@@ -1,21 +1,8 @@
-const mysql = require('mysql');
+const connection = require('./config/connection.js');
 const inquirer = require('inquirer');
 require('console.table');
 
-const connection = mysql.createConnection({
-    host: 'localhost',
-
-    port: 3306,
-
-    user: 'root',
-    password: 'root',
-    database: 'employeeTracker_DB'
-});
-
-connection.connect(function (err) {
-    if (err) throw err;
-    runTracker();
-});
+runTracker();
 
 function runTracker() {
     inquirer
@@ -319,9 +306,14 @@ function addRole() {
                     name: 'title'
                 },
                 {
-                    type: 'input',
+                    type: 'number',
                     message: 'What is the salary of this role?',
-                    name: 'salary'
+                    name: 'salary',
+                    // validate: function(salary) {
+                    //     if(salary === NaN){
+                    //         addRole();
+                    //     }
+                    // }
                 },
                 {
                     type: 'rawlist',
@@ -338,6 +330,9 @@ function addRole() {
                     }
                 }
             ]).then(function (answer) {
+                // if(answer.salary === NaN) {
+                //     addRole();
+                // }
                 let chosenItem;
                 for (let i = 0; i < res.length; i++) {
                     if (res[i].name === answer.department) {
@@ -349,7 +344,7 @@ function addRole() {
                     'INSERT INTO roles SET ?',
                     {
                         title: answer.title.trim(),
-                        salary: answer.salary.trim(),
+                        salary: answer.salary,
                         department_id: chosenItem
                     },
                     function (err) {
@@ -427,7 +422,7 @@ function updateRole() {
                 name: 'title',
             },
             {
-                type: 'input',
+                type: 'number',
                 message: 'What is the role\'s new salary?',
                 name: 'salary',
             }
