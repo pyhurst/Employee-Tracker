@@ -34,6 +34,8 @@ function runTracker() {
                 "Remove Role",
                 "Update Role",
                 "View All Departments",
+                "Add Department",
+                "Remove Department",
                 "Total Utilized Budget by Department",
                 "Exit"
             ]
@@ -68,6 +70,12 @@ function runTracker() {
                     break;
                 case "View All Departments":
                     viewDepartments();
+                    break;
+                case "Add Department":
+                    addDepartment();
+                    break;
+                case "Remove Department":
+                    deleteDepartment();
                     break;
                 case "Total Utilized Budget by Department":
                     viewBudget();
@@ -346,7 +354,7 @@ function addRole() {
                     },
                     function (err) {
                         if (err) throw err;
-                        console.log('Role successfully added!');
+                        console.log(`Role: ${answer.title} was successfully added with a salary of $${answer.salary} in ${answer.department} department.`);
                         runTracker();
                     });
             })
@@ -482,6 +490,65 @@ function viewDepartments() {
         console.table(data);
         runTracker();
     });
+}
+
+function addDepartment() {
+    connection.query('SELECT * FROM department', function (err, res) {
+        if (err) throw err;
+        inquirer
+            .prompt([
+                {
+                    type: 'input',
+                    message: 'What is the name of the department to be added?',
+                    name: 'name'
+                }
+            ]).then(function (answer) {
+                connection.query('INSERT INTO department SET name = ?', answer.name.trim(),
+                    function (err) {
+                        if (err) throw err;
+                        console.log(`Department ${answer.name} was successfully added!`);
+                        runTracker();
+                    });
+            })
+    });
+}
+
+function deleteDepartment() {
+    connection.query('SELECT * FROM department', function (err, res) {
+        if (err) throw err;
+        inquirer
+            .prompt(
+                {
+                    type: 'rawlist',
+                    message: 'Which department would you like to delete?',
+                    name: 'remove',
+                    choices: function () {
+                        var choiceArray = [];
+                        for (var i = 0; i < res.length; i++) {
+                            choiceArray.push(res[i].name);
+                        }
+                        return choiceArray;
+                    }
+                }
+
+            ).then(function (answer) {
+                let chosenItemId;
+
+                for (let i = 0; i < res.length; i++) {
+                    if (res[i].name === answer.remove) {
+                        chosenItemId = res[i].id;
+                    }
+                }
+
+                let query = 'DELETE FROM department WHERE id = ?';
+
+                connection.query(query, chosenItemId, function (err, data) {
+                    if (err) throw err;
+                    console.log(`${answer.remove} has been deleted.`);
+                    runTracker();
+                });
+            })
+    })
 }
 
 function viewBudget() {
