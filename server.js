@@ -309,11 +309,12 @@ function addRole() {
                     type: 'number',
                     message: 'What is the salary of this role?',
                     name: 'salary',
-                    // validate: function(salary) {
-                    //     if(salary === NaN){
-                    //         addRole();
-                    //     }
-                    // }
+                    validate: function (value) {
+                        if (isNaN(value)) {
+                          return false;
+                        }
+                        return true;
+                      },
                 },
                 {
                     type: 'rawlist',
@@ -330,13 +331,10 @@ function addRole() {
                     }
                 }
             ]).then(function (answer) {
-                // if(answer.salary === NaN) {
-                //     addRole();
-                // }
-                let chosenItem;
+                let chosenItemId;
                 for (let i = 0; i < res.length; i++) {
                     if (res[i].name === answer.department) {
-                        chosenItem = res[i].id;
+                        chosenItemId = res[i].id;
                     }
                 }
 
@@ -345,7 +343,7 @@ function addRole() {
                     {
                         title: answer.title.trim(),
                         salary: answer.salary,
-                        department_id: chosenItem
+                        department_id: chosenItemId
                     },
                     function (err) {
                         if (err) throw err;
@@ -425,6 +423,12 @@ function updateRole() {
                 type: 'number',
                 message: 'What is the role\'s new salary?',
                 name: 'salary',
+                validate: function (value) {
+                    if (isNaN(value)) {
+                      return false;
+                    }
+                    return true;
+                  }
             }
         ]).then(function (answer) {
             for (let i = 0; i < res.length; i++) {
