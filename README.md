@@ -24,7 +24,7 @@ Packages used are mysql, inquirer, and console.table.
 
 In this application, the user can store employees with this first/last name, company role, and an employee's id is automatically applied. By assigning his or her's company role, the database will also store the salary and department associated with the role. 
 
-![Add Employee](/assets/em-tracker-add-employee.png)
+![Add Employee](./assets/em-tracker-add-employee.png)
 
 You are able to view all employees, all employees by department, all roles, all company departments, or the total utilized budget used by a particular department. You may also add or delete an employee, role, or department at any time.  Other features include, updating an employee's role or updating a company's role. One important note is if you delete a role or department, all employees associated with that deleted role or department will also be removed! Be careful!
 
