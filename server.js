@@ -75,7 +75,7 @@ function runTracker() {
 }
 
 function viewEmployees() {
-    let query = 'SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name, roles.salary ';
+    let query = 'SELECT employee.id AS "ID", employee.first_name AS "First Name", employee.last_name AS "Last Name", roles.title AS "Company Role", department.name AS "Department", roles.salary AS "Salary"';
     query += "FROM employee INNER JOIN roles ON (employee.role_id = roles.id) ";
     query += "INNER JOIN department ON (roles.department_id = department.id)";
 
@@ -87,7 +87,7 @@ function viewEmployees() {
 }
 
 function addEmployee() {
-    connection.query('SELECT id,title FROM roles', function (err, res) {
+    connection.query('SELECT id, title FROM roles', function (err, res) {
         if (err) throw err;
         inquirer
             .prompt([
@@ -163,7 +163,7 @@ function viewByDepartment() {
                     }
                 }
 
-                let query = 'SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name, roles.salary ';
+                let query = 'SELECT employee.id AS "ID", employee.first_name AS "First Name", employee.last_name AS "Last Name", roles.title AS "Company Role", department.name AS "Department", roles.salary AS "Salary"';
                 query += "FROM employee INNER JOIN roles ON (employee.role_id = roles.id) ";
                 query += "INNER JOIN department ON (roles.department_id = department.id)";
                 query += `WHERE (roles.department_id = ${chosenItem})`;
@@ -285,7 +285,7 @@ function updateEmployeeRole() {
 }
 
 function viewRoles() {
-    let query = 'SELECT roles.title, roles.salary, department.name ';
+    let query = 'SELECT roles.title AS "Company Role", roles.salary AS "Salary", department.name AS "Department"';
     query += "FROM roles INNER JOIN department ON (roles.department_id = department.id)";
 
     connection.query(query, function (err, data) {
@@ -484,7 +484,7 @@ function updateRole() {
 }
 
 function viewDepartments() {
-    connection.query('SELECT * FROM department', function (err, data) {
+    connection.query('SELECT department.id AS "ID", department.name AS "Department" FROM department', function (err, data) {
         if (err) throw err;
         console.table(data);
         runTracker();
