@@ -18,7 +18,7 @@ An employee management application that stores employee, company roles, and depa
 
 ## Installation
 
-Packages used are mysql, inquirer, and console.table.
+Packages used are node, mysql, inquirer, and console.table.
 
 ## Usage
 
